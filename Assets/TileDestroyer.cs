@@ -3,32 +3,48 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement; // Para reiniciar o jogo
+using System.Collections.Generic;
 
 public class TileDestroyer : MonoBehaviour
 {
 	public Tilemap tilemap;
+	public Tilemap resistantTilemap;
+	public int resistantTilesInicialHealth;
 
-	public enum PowerType { Single, Explosion }
-	public PowerType currentPower = PowerType.Single;
+	public enum PowerType { Single, Explosion, Line, Pierce }
+	public PowerType currentPower = PowerType.Single;	
 
 	public Button buttonSingle;
 	public Button buttonExplosion;
+	public Button buttonLine;
+	public Button buttonPierce;
+
 	public TMP_Text ammoSingleText;
 	public TMP_Text ammoExplosionText;
-	public GameObject gameOverPanel; // Painel de Game Over
-	public GameObject successPanel; // Painel de Sucesso
+	public TMP_Text ammoLineText;
+	public TMP_Text ammoPierceText;
+
+	public GameObject gameOverPanel;
+	public GameObject successPanel;
 
 	[SerializeField] private int ammoSingle = 3;
 	[SerializeField] private int ammoExplosion = 1;
+	[SerializeField] private int ammoLine = 2;
+	[SerializeField] private int ammoPierce = 2;
+
+	private Dictionary<Vector3Int, int> resistantTilesHealth = new Dictionary<Vector3Int, int>();
 
 	void Start()
 	{
 		buttonSingle.onClick.AddListener(SetSinglePower);
 		buttonExplosion.onClick.AddListener(SetExplosionPower);
+		buttonLine.onClick.AddListener(SetLinePower);
+		buttonPierce.onClick.AddListener(SetPiercePower);
 
 		gameOverPanel.SetActive(false);
-		successPanel.SetActive(false); // Oculta o painel de sucesso no início
+		successPanel.SetActive(false);
 		UpdateAmmoUI();
+		InitializeResistantTiles();
 	}
 
 	void Update()
@@ -56,7 +72,7 @@ public class TileDestroyer : MonoBehaviour
 		}
 #endif
 	}
-
+	
 	void TryDestroyTiles(Vector3Int centerPosition)
 	{
 		if (!tilemap.HasTile(centerPosition))
@@ -64,42 +80,58 @@ public class TileDestroyer : MonoBehaviour
 
 		if (currentPower == PowerType.Single && ammoSingle > 0)
 		{
-			DestroyTiles(centerPosition);
+			DestroyTiles(centerPosition, new Vector3Int[] { Vector3Int.zero });
 			ammoSingle--;
 		}
 		else if (currentPower == PowerType.Explosion && ammoExplosion > 0)
 		{
-			DestroyTiles(centerPosition);
+			DestroyTiles(centerPosition, new Vector3Int[] {	Vector3Int.zero, Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down });
 			ammoExplosion--;
+		}
+		else if (currentPower == PowerType.Line && ammoLine > 0)
+		{
+			DestroyTiles(centerPosition, new Vector3Int[] {	Vector3Int.zero, Vector3Int.right, Vector3Int.left });
+			ammoLine--;
+		}
+		else if (currentPower == PowerType.Pierce && ammoPierce > 0)
+		{
+			DestroyTiles(centerPosition, new Vector3Int[] { Vector3Int.zero, Vector3Int.zero, Vector3Int.zero });
+			ammoPierce--;
 		}
 
 		UpdateAmmoUI();
-		CheckGameOverOrSuccess(); // Agora verifica se o jogo acabou ou se foi um sucesso
+		CheckGameOverOrSuccess();
 	}
 
-	void DestroyTiles(Vector3Int centerPosition)
+	void DestroyTiles(Vector3Int centerPosition, Vector3Int[] directions)
 	{
-		Vector3Int[] directions;
-
-		if (currentPower == PowerType.Single)
-		{
-			directions = new Vector3Int[] { Vector3Int.zero };
-		}
-		else if (currentPower == PowerType.Explosion)
-		{
-			directions = new Vector3Int[] {
-				Vector3Int.zero, new Vector3Int(1, 0, 0), new Vector3Int(-1, 0, 0),
-				new Vector3Int(0, 1, 0), new Vector3Int(0, -1, 0)
-			};
-		}
-		else return;
-
 		foreach (Vector3Int direction in directions)
 		{
 			Vector3Int targetPosition = centerPosition + direction;
-			if (tilemap.HasTile(targetPosition))
+			if (resistantTilesHealth.ContainsKey(targetPosition))
+			{
+				resistantTilesHealth[targetPosition]--;
+				if (resistantTilesHealth[targetPosition] <= 0)
+				{
+					resistantTilemap.SetTile(targetPosition, null);
+					resistantTilesHealth.Remove(targetPosition);
+				}
+			}
+			else if (tilemap.HasTile(targetPosition))
 			{
 				tilemap.SetTile(targetPosition, null);
+			}
+		}
+	}
+
+	void InitializeResistantTiles()
+	{
+		BoundsInt bounds = resistantTilemap.cellBounds;
+		foreach (Vector3Int pos in bounds.allPositionsWithin)
+		{
+			if (resistantTilemap.HasTile(pos))
+			{
+				resistantTilesHealth[pos] = resistantTilesInicialHealth;
 			}
 		}
 	}
@@ -115,14 +147,30 @@ public class TileDestroyer : MonoBehaviour
 		if (ammoExplosion > 0)
 			currentPower = PowerType.Explosion;
 	}
+	public void SetLinePower()
+	{
+		if (ammoLine > 0)
+			currentPower = PowerType.Line;
+	}
+
+	public void SetPiercePower()
+	{
+		if (ammoPierce > 0)
+			currentPower = PowerType.Pierce;
+	}
+
 
 	void UpdateAmmoUI()
 	{
 		ammoSingleText.text = $"Single: {ammoSingle}";
 		ammoExplosionText.text = $"Explosion: {ammoExplosion}";
+		ammoLineText.text = $"Line: {ammoLine}";
+		ammoPierceText.text = $"Pierce: {ammoPierce}";
 
 		buttonSingle.interactable = ammoSingle > 0;
 		buttonExplosion.interactable = ammoExplosion > 0;
+		buttonLine.interactable = ammoLine > 0;
+		buttonPierce.interactable = ammoPierce > 0;
 	}
 
 	void CheckGameOverOrSuccess()
@@ -131,7 +179,7 @@ public class TileDestroyer : MonoBehaviour
 		{
 			Success();
 		}
-		else if (ammoSingle == 0 && ammoExplosion == 0 && AnyTileLeft())
+		else if (ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 && ammoPierce == 0 && AnyTileLeft())
 		{
 			GameOver();
 		}
@@ -139,6 +187,9 @@ public class TileDestroyer : MonoBehaviour
 
 	bool AnyTileLeft()
 	{
+		if (resistantTilesHealth.Count > 0)
+			return true;
+
 		BoundsInt bounds = tilemap.cellBounds;
 		foreach (Vector3Int pos in bounds.allPositionsWithin)
 		{
@@ -152,7 +203,7 @@ public class TileDestroyer : MonoBehaviour
 
 	bool AllTilesDestroyed()
 	{
-		return !AnyTileLeft(); // Se não houver mais tiles, então o jogador venceu!
+		return !AnyTileLeft();
 	}
 
 	void GameOver()
@@ -168,10 +219,5 @@ public class TileDestroyer : MonoBehaviour
 	public void RestartGame()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-	}
-
-	public void NextLevel()
-	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
 	}
 }
