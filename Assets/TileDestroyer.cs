@@ -10,19 +10,23 @@ public class TileDestroyer : MonoBehaviour
 	public Tilemap tilemap;
 	public Tilemap resistantTilemap;
 	public int resistantTilesInicialHealth;
+	public Image lShapeIndicator;
+	private int lShapeIndex = 0;
 
-	public enum PowerType { Single, Explosion, Line, Pierce }
+	public enum PowerType { Single, Explosion, Line, Pierce, LShape }
 	public PowerType currentPower = PowerType.Single;	
 
 	public Button buttonSingle;
 	public Button buttonExplosion;
 	public Button buttonLine;
 	public Button buttonPierce;
+	public Button buttonLShape;
 
 	public TMP_Text ammoSingleText;
 	public TMP_Text ammoExplosionText;
 	public TMP_Text ammoLineText;
 	public TMP_Text ammoPierceText;
+	public TMP_Text ammoLShapeText;
 
 	public GameObject gameOverPanel;
 	public GameObject successPanel;
@@ -31,8 +35,12 @@ public class TileDestroyer : MonoBehaviour
 	[SerializeField] private int ammoExplosion = 1;
 	[SerializeField] private int ammoLine = 2;
 	[SerializeField] private int ammoPierce = 2;
+	[SerializeField] private int ammoLShape = 2;
 
 	private Dictionary<Vector3Int, int> resistantTilesHealth = new Dictionary<Vector3Int, int>();
+
+	private readonly float[] lShapeRotations = { 0f, 90f, 180f, 270f };
+
 
 	void Start()
 	{
@@ -40,6 +48,10 @@ public class TileDestroyer : MonoBehaviour
 		buttonExplosion.onClick.AddListener(SetExplosionPower);
 		buttonLine.onClick.AddListener(SetLinePower);
 		buttonPierce.onClick.AddListener(SetPiercePower);
+		buttonLShape.onClick.AddListener(SetLShapePower);
+
+		buttonLShape.onClick.AddListener(RotateLShape);
+
 
 		gameOverPanel.SetActive(false);
 		successPanel.SetActive(false);
@@ -97,6 +109,23 @@ public class TileDestroyer : MonoBehaviour
 		{
 			DestroyTiles(centerPosition, new Vector3Int[] { Vector3Int.zero, Vector3Int.zero, Vector3Int.zero });
 			ammoPierce--;
+		}
+		else if (currentPower == PowerType.LShape && ammoLShape > 0)
+		{
+			// Define os padrões de "L"
+
+			Vector3Int[][] lPatterns = new Vector3Int[][]
+			{
+				new Vector3Int[] { Vector3Int.zero, Vector3Int.up, Vector3Int.right },   // 0° (Cima, Direita)
+				new Vector3Int[] { Vector3Int.zero, Vector3Int.up, Vector3Int.left },    // 90° (Cima, Esquerda)
+				new Vector3Int[] { Vector3Int.zero, Vector3Int.down, Vector3Int.left },  // 180° (Baixo, Esquerda)
+				new Vector3Int[] { Vector3Int.zero, Vector3Int.down, Vector3Int.right }  // 270° (Baixo, Direita)
+			};
+
+			Vector3Int[] selectedPattern = lPatterns[lShapeIndex]; // Usa a rotação correta
+
+			DestroyTiles(centerPosition, selectedPattern);
+			ammoLShape--;
 		}
 
 		UpdateAmmoUI();
@@ -159,6 +188,11 @@ public class TileDestroyer : MonoBehaviour
 			currentPower = PowerType.Pierce;
 	}
 
+	public void SetLShapePower()
+	{
+		if (ammoLShape > 0)
+			currentPower = PowerType.LShape;
+	}
 
 	void UpdateAmmoUI()
 	{
@@ -166,11 +200,13 @@ public class TileDestroyer : MonoBehaviour
 		ammoExplosionText.text = $"Explosion: {ammoExplosion}";
 		ammoLineText.text = $"Line: {ammoLine}";
 		ammoPierceText.text = $"Pierce: {ammoPierce}";
+		ammoLShapeText.text = $"L-Shape: {ammoLShape}";
 
 		buttonSingle.interactable = ammoSingle > 0;
 		buttonExplosion.interactable = ammoExplosion > 0;
 		buttonLine.interactable = ammoLine > 0;
 		buttonPierce.interactable = ammoPierce > 0;
+		buttonLShape.interactable = ammoLShape > 0;
 	}
 
 	void CheckGameOverOrSuccess()
@@ -200,6 +236,12 @@ public class TileDestroyer : MonoBehaviour
 		}
 		return false; // Todos os tiles foram destruídos
 	}
+	public void RotateLShape() // rotate the icon image representing the L shape
+	{
+		lShapeIndex = (lShapeIndex + 1) % lShapeRotations.Length; // Alterna entre 0,1,2,3
+		lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
+	}
+
 
 	bool AllTilesDestroyed()
 	{
