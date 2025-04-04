@@ -43,20 +43,23 @@ public class TileDestroyer : MonoBehaviour
 
 
 	void Start()
-	{
+	{		
 		buttonSingle.onClick.AddListener(SetSinglePower);
 		buttonExplosion.onClick.AddListener(SetExplosionPower);
 		buttonLine.onClick.AddListener(SetLinePower);
 		buttonPierce.onClick.AddListener(SetPiercePower);
 		buttonLShape.onClick.AddListener(SetLShapePower);
 
-		buttonLShape.onClick.AddListener(RotateLShape);
+		//buttonLShape.onClick.AddListener(RotateLShape);
+		RandomizeLShapeDirection();
 
 
 		gameOverPanel.SetActive(false);
 		successPanel.SetActive(false);
 		UpdateAmmoUI();
 		InitializeResistantTiles();
+
+		
 	}
 
 	void Update()
@@ -126,6 +129,7 @@ public class TileDestroyer : MonoBehaviour
 
 			DestroyTiles(centerPosition, selectedPattern);
 			ammoLShape--;
+			RandomizeLShapeDirection();
 		}
 
 		UpdateAmmoUI();
@@ -236,12 +240,17 @@ public class TileDestroyer : MonoBehaviour
 		}
 		return false; // Todos os tiles foram destruídos
 	}
-	public void RotateLShape() // rotate the icon image representing the L shape
+	//public void RotateLShape() // rotate the icon image representing the L shape
+	//{
+	//	lShapeIndex = (lShapeIndex + 1) % lShapeRotations.Length; // Alterna entre 0,1,2,3
+	//	lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
+	//}
+
+	private void RandomizeLShapeDirection()
 	{
-		lShapeIndex = (lShapeIndex + 1) % lShapeRotations.Length; // Alterna entre 0,1,2,3
+		lShapeIndex = Random.Range(0, 4); // Sorteia um número entre 0 e 3
 		lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
 	}
-
 
 	bool AllTilesDestroyed()
 	{
