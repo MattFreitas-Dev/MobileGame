@@ -12,6 +12,11 @@ public class TileDestroyer : MonoBehaviour
 	public int resistantTilesInicialHealth;
 	public Image lShapeIndicator;
 	private int lShapeIndex = 0;
+	private Vector3 startTouchWorldPos;
+	private Vector3 touchStartWorldPos;
+	private Vector3Int touchStartTilePos;
+
+	private bool isDragging = false;
 
 	public enum PowerType { Single, Explosion, Line, Pierce, LShape }
 	public PowerType currentPower = PowerType.Single;	
@@ -74,20 +79,63 @@ public class TileDestroyer : MonoBehaviour
 		{
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
-			TryDestroyTiles(tilePos);
+
+			if (currentPower == PowerType.Line)
+			{
+				touchStartWorldPos = worldPos;
+				touchStartTilePos = tilePos;
+				isDragging = true;
+			}
+			else
+			{
+				TryDestroyTiles(tilePos);
+			}
+		}
+
+		if (Input.GetMouseButtonUp(0) && isDragging && currentPower == PowerType.Line)
+		{
+			Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Vector2 dragDirection = endWorldPos - touchStartWorldPos;
+
+			TryDestroyLineWithDirection(touchStartTilePos, dragDirection);
+			isDragging = false;
 		}
 #endif
 
 #if UNITY_ANDROID || UNITY_IOS
-		if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+		if (Input.touchCount > 0)
 		{
-			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+			Touch touch = Input.GetTouch(0);
+			Vector3 worldPos = Camera.main.ScreenToWorldPoint(touch.position);
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
-			TryDestroyTiles(tilePos);
+
+			if (touch.phase == TouchPhase.Began)
+			{
+				if (currentPower == PowerType.Line)
+				{
+					touchStartWorldPos = worldPos;
+					touchStartTilePos = tilePos;
+					isDragging = true;
+				}
+				else
+				{
+					TryDestroyTiles(tilePos);
+				}
+			}
+			else if (touch.phase == TouchPhase.Ended && isDragging && currentPower == PowerType.Line)
+			{
+				Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(touch.position);
+				Vector2 dragDirection = endWorldPos - touchStartWorldPos;
+
+				TryDestroyLineWithDirection(touchStartTilePos, dragDirection);
+				isDragging = false;
+			}
 		}
 #endif
 	}
-	
+
+
+
 	void TryDestroyTiles(Vector3Int centerPosition)
 	{
 		if (!tilemap.HasTile(centerPosition))
@@ -135,6 +183,44 @@ public class TileDestroyer : MonoBehaviour
 		UpdateAmmoUI();
 		CheckGameOverOrSuccess();
 	}
+	void TryDestroyLineWithDirection(Vector3Int startPosition, Vector2 dragDirection)
+	{
+		if (currentPower != PowerType.Line || ammoLine <= 0)
+			return;
+
+		if (!tilemap.HasTile(startPosition) && !resistantTilesHealth.ContainsKey(startPosition))
+			return;
+
+		Vector3Int dir;
+
+		// Decide a direção principal do arrasto
+		if (Mathf.Abs(dragDirection.x) > Mathf.Abs(dragDirection.y))
+		{
+			// Horizontal
+			dir = (dragDirection.x > 0) ? Vector3Int.right : Vector3Int.left;
+		}
+		else
+		{
+			// Vertical
+			dir = (dragDirection.y > 0) ? Vector3Int.up : Vector3Int.down;
+		}
+
+		// Constrói os 3 tiles a partir da ponta
+		Vector3Int[] directions = new Vector3Int[]
+		{
+		Vector3Int.zero,           // Ponta (onde clicou)
+        dir,                       // Próximo tile
+        dir * 2                    // Segundo tile
+		};
+
+		DestroyTiles(startPosition, directions);
+		ammoLine--;
+
+		UpdateAmmoUI();
+		CheckGameOverOrSuccess();
+	}
+
+
 
 	void DestroyTiles(Vector3Int centerPosition, Vector3Int[] directions)
 	{

@@ -3387,7 +3387,7 @@ PrefabInstance:
       objectReference: {fileID: 684308097}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoLine
-      value: 2
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoLShape
