@@ -42,6 +42,14 @@ public class TileDestroyer : MonoBehaviour
 	[SerializeField] private int ammoPierce = 2;
 	[SerializeField] private int ammoLShape = 2;
 
+	// AUDIO
+	[SerializeField] private AudioSource audioSource;
+	[SerializeField] private AudioClip singleSound;
+	[SerializeField] private AudioClip explosionSound;
+	[SerializeField] private AudioClip lineSound;
+	[SerializeField] private AudioClip pierceSound;
+	[SerializeField] private AudioClip lShapeSound;
+
 	private Dictionary<Vector3Int, int> resistantTilesHealth = new Dictionary<Vector3Int, int>();
 
 	private readonly float[] lShapeRotations = { 0f, 90f, 180f, 270f };
@@ -145,11 +153,13 @@ public class TileDestroyer : MonoBehaviour
 		{
 			DestroyTiles(centerPosition, new Vector3Int[] { Vector3Int.zero });
 			ammoSingle--;
+			audioSource.PlayOneShot(singleSound);
 		}
 		else if (currentPower == PowerType.Explosion && ammoExplosion > 0)
 		{
 			DestroyTiles(centerPosition, new Vector3Int[] {	Vector3Int.zero, Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down });
 			ammoExplosion--;
+			audioSource.PlayOneShot(explosionSound);
 		}
 		else if (currentPower == PowerType.Line && ammoLine > 0)
 		{
@@ -160,6 +170,7 @@ public class TileDestroyer : MonoBehaviour
 		{
 			DestroyTiles(centerPosition, new Vector3Int[] { Vector3Int.zero, Vector3Int.zero, Vector3Int.zero });
 			ammoPierce--;
+			audioSource.PlayOneShot(pierceSound);
 		}
 		else if (currentPower == PowerType.LShape && ammoLShape > 0)
 		{
@@ -177,6 +188,7 @@ public class TileDestroyer : MonoBehaviour
 
 			DestroyTiles(centerPosition, selectedPattern);
 			ammoLShape--;
+			audioSource.PlayOneShot(lShapeSound);
 			RandomizeLShapeDirection();
 		}
 
@@ -205,7 +217,7 @@ public class TileDestroyer : MonoBehaviour
 			dir = (dragDirection.y > 0) ? Vector3Int.up : Vector3Int.down;
 		}
 
-		// Constrói os 3 tiles a partir da ponta
+		// Destroi os 3 tiles a partir da ponta
 		Vector3Int[] directions = new Vector3Int[]
 		{
 		Vector3Int.zero,           // Ponta (onde clicou)
@@ -215,6 +227,7 @@ public class TileDestroyer : MonoBehaviour
 
 		DestroyTiles(startPosition, directions);
 		ammoLine--;
+		audioSource.PlayOneShot(lineSound);
 
 		UpdateAmmoUI();
 		CheckGameOverOrSuccess();
