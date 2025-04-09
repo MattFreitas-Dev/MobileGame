@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 99f9aef4ccf929c4e88c4769f710f6af
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 263326
+  packageName: HQ Explosions Pack FREE
+  packageVersion: 1.0
+  assetPath: Assets/HQ Explosions Pack FREE/Scripts/changeEffects.cs
+  uploadId: 607778

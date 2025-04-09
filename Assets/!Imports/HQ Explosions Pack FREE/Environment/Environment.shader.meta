@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 1f4dac35d021ee243b3c7a908240baff
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _checkerRGBMask2: {fileID: 2800000, guid: f53e01a0d2f0ec140aeaa1937bbf1272, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 263326
+  packageName: HQ Explosions Pack FREE
+  packageVersion: 1.0
+  assetPath: Assets/HQ Explosions Pack FREE/Environment/Environment.shader
+  uploadId: 607778
