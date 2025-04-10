@@ -205,7 +205,6 @@ public class TileDestroyer : MonoBehaviour
 		}
 
 		UpdateAmmoUI();
-		CheckGameOverOrSuccess();
 	}
 	void TryDestroyLineWithDirection(Vector3Int startPosition, Vector2 dragDirection)
 	{
@@ -242,7 +241,6 @@ public class TileDestroyer : MonoBehaviour
 		audioSource.PlayOneShot(lineSound);
 
 		UpdateAmmoUI();
-		CheckGameOverOrSuccess();
 	}
 
 
@@ -335,18 +333,6 @@ public class TileDestroyer : MonoBehaviour
 		buttonLine.interactable = ammoLine > 0;
 		buttonPierce.interactable = ammoPierce > 0;
 		buttonLShape.interactable = ammoLShape > 0;
-	}
-
-	void CheckGameOverOrSuccess()
-	{
-		if (AllTilesDestroyed())
-		{
-			Success();
-		}
-		else if (ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 && ammoPierce == 0 && AnyTileLeft())
-		{
-			GameOver();
-		}
 	}
 
 	bool AnyTileLeft()
@@ -448,6 +434,17 @@ public class TileDestroyer : MonoBehaviour
 	{
 		return !AnyTileLeft();
 	}
+	void CheckGameOverOrSuccess()
+	{
+		if (AllTilesDestroyed())
+		{
+			Success();
+		}
+		else if (ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 && ammoPierce == 0 && ammoLShape == 0 && AnyTileLeft())
+		{
+			GameOver();
+		}
+	}
 
 	void GameOver()
 	{
@@ -462,5 +459,10 @@ public class TileDestroyer : MonoBehaviour
 	public void RestartGame()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+	}
+
+	public void NextLevel()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
 }
