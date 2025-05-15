@@ -1578,6 +1578,10 @@ PrefabInstance:
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 684308097}
+    - target: {fileID: 9151020287972762821, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 8778699456316778756, guid: 41ba1a2d966aa7343a7d2822d178383a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
