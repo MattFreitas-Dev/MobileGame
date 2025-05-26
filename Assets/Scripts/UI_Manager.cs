@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -8,7 +9,17 @@ public class UI_Manager : MonoBehaviour
     public AudioMixer musicMixer;
     public AudioMixer sFXMixer;
 
-    public void MusicVolume(float volume)
+	public TMP_FontAsset newFont;
+
+	//private void Start()
+	//{
+	//	TMP_Text[] textElements = FindObjectsByType<TMP_Text>(FindObjectsSortMode.None);
+	//	foreach (TMP_Text text in textElements)
+	//	{
+	//		text.font = newFont;
+	//	}
+	//}
+	public void MusicVolume(float volume)
     {
         musicMixer.SetFloat("MusicVolume", volume);
     }
