@@ -9,7 +9,7 @@ public class UI_Manager : MonoBehaviour
     public AudioMixer musicMixer;
     public AudioMixer sFXMixer;
 
-	public TMP_FontAsset newFont;
+	//public TMP_FontAsset newFont;
 
 	//private void Start()
 	//{
