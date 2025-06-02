@@ -7021,6 +7021,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7772491171760962554, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: fc5af015011ea3745b7f78ea1dd1049f, type: 3}
+    - target: {fileID: 7772491171760962554, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: fc5af015011ea3745b7f78ea1dd1049f, type: 3}
     - target: {fileID: 9205799377150898751, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
       propertyPath: m_Name
       value: UI Manager
