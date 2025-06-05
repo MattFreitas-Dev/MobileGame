@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement; // Para reiniciar o jogo
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class TileDestroyer : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class TileDestroyer : MonoBehaviour
 
 	public GameObject gameOverPanel;
 	public GameObject successPanel;
+	public RectTransform highlightImage;
+
 
 	[SerializeField] private int ammoSingle = 3;
 	[SerializeField] private int ammoExplosion = 1;
@@ -96,6 +99,9 @@ public class TileDestroyer : MonoBehaviour
 #if UNITY_EDITOR || UNITY_STANDALONE
 		if (Input.GetMouseButtonDown(0))
 		{
+			if (EventSystem.current.IsPointerOverGameObject())
+				return; // Está clicando na UI, então ignora.
+
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
 
@@ -106,7 +112,7 @@ public class TileDestroyer : MonoBehaviour
 				isDragging = true;
 			}
 			else
-			{
+			{				
 				TryDestroyTiles(tilePos);
 			}
 		}
@@ -130,6 +136,9 @@ public class TileDestroyer : MonoBehaviour
 
 			if (touch.phase == TouchPhase.Began)
 			{
+				if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+					return;
+
 				if (currentPower == PowerType.Line)
 				{
 					touchStartWorldPos = worldPos;
@@ -154,6 +163,7 @@ public class TileDestroyer : MonoBehaviour
 	}
 
 
+	//METHODS
 
 	void TryDestroyTiles(Vector3Int centerPosition)
 	{
@@ -294,30 +304,45 @@ public class TileDestroyer : MonoBehaviour
 	public void SetSinglePower()
 	{
 		if (ammoSingle > 0)
+		{
 			currentPower = PowerType.Single;
+			MoveHighlightToButton(buttonSingle);
+		}
 	}
 
 	public void SetExplosionPower()
 	{
 		if (ammoExplosion > 0)
+		{
 			currentPower = PowerType.Explosion;
+			MoveHighlightToButton(buttonExplosion);
+		}
 	}
 	public void SetLinePower()
 	{
 		if (ammoLine > 0)
+		{
 			currentPower = PowerType.Line;
+			MoveHighlightToButton(buttonLine);
+		}
 	}
 
 	public void SetPiercePower()
 	{
 		if (ammoPierce > 0)
+		{
 			currentPower = PowerType.Pierce;
+			MoveHighlightToButton(buttonPierce);
+		}
 	}
 
 	public void SetLShapePower()
 	{
 		if (ammoLShape > 0)
+		{
 			currentPower = PowerType.LShape;
+			MoveHighlightToButton(buttonLShape);
+		}
 	}
 
 	void UpdateAmmoUI()
@@ -334,27 +359,10 @@ public class TileDestroyer : MonoBehaviour
 		buttonPierce.interactable = ammoPierce > 0;
 		buttonLShape.interactable = ammoLShape > 0;
 	}
-
-	bool AnyTileLeft()
+	private void MoveHighlightToButton(Button selectedButton)
 	{
-		if (resistantTilesHealth.Count > 0)
-			return true;
-
-		BoundsInt bounds = tilemap.cellBounds;
-		foreach (Vector3Int pos in bounds.allPositionsWithin)
-		{
-			if (tilemap.HasTile(pos))
-			{
-				return true; // Ainda há tiles no mapa
-			}
-		}
-		return false; // Todos os tiles foram destruídos
+		highlightImage.position = selectedButton.transform.position;
 	}
-	//public void RotateLShape() // rotate the icon image representing the L shape
-	//{
-	//	lShapeIndex = (lShapeIndex + 1) % lShapeRotations.Length; // Alterna entre 0,1,2,3
-	//	lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
-	//}
 
 	private void RandomizeLShapeDirection()
 	{
@@ -384,15 +392,7 @@ public class TileDestroyer : MonoBehaviour
 			default: return null;
 		}
 	}
-	/*Vector3Int[] GetAffectedPositions(Vector3Int origin, Vector3Int[] directions)
-	{
-		Vector3Int[] result = new Vector3Int[directions.Length];
-		for (int i = 0; i < directions.Length; i++)
-		{
-			result[i] = origin + directions[i];
-		}
-		return result;
-	}*/
+	
 	IEnumerator PlayEffectCascade(GameObject effectPrefab, Vector3Int[] tilePositions, float delay = 0.2f)
 	{
 		foreach (var tilePos in tilePositions)
@@ -429,6 +429,22 @@ public class TileDestroyer : MonoBehaviour
 	}
 
 	//  END OF VFX
+
+	bool AnyTileLeft()
+	{
+		if (resistantTilesHealth.Count > 0)
+			return true;
+
+		BoundsInt bounds = tilemap.cellBounds;
+		foreach (Vector3Int pos in bounds.allPositionsWithin)
+		{
+			if (tilemap.HasTile(pos))
+			{
+				return true; // Ainda há tiles no mapa
+			}
+		}
+		return false; // Todos os tiles foram destruídos
+	}
 
 	bool AllTilesDestroyed()
 	{
