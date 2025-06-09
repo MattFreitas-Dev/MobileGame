@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement; // Para reiniciar o jogo
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.EventSystems;
@@ -11,82 +11,63 @@ public class TileDestroyer : MonoBehaviour
 {
 	public Tilemap tilemap;
 	public Tilemap resistantTilemap;
-	public int resistantTilesInicialHealth;
-	public Image lShapeIndicator;
-	private int lShapeIndex = 0;
-	private Vector3 startTouchWorldPos;
-	private Vector3 touchStartWorldPos;
-	private Vector3Int touchStartTilePos;
+	public Tilemap vineTilemap;
 
-	private bool isDragging = false;
+	public int resistantTilesInicialHealth = 1;
+
+	// BotÃµes e textos para muniÃ§Ãµes normais
+	public Button buttonSingle, buttonExplosion, buttonLine, buttonPierce, buttonLShape;
+	public TMP_Text ammoSingleText, ammoExplosionText, ammoLineText, ammoPierceText, ammoLShapeText;
+
+	// BotÃµes e textos para muniÃ§Ãµes de fogo
+	public Button buttonFireSingle, buttonFireExplosion, buttonFireLine;
+	public TMP_Text ammoFireSingleText, ammoFireExplosionText, ammoFireLineText;
+
+	public GameObject gameOverPanel, successPanel;
+	public RectTransform highlightImage;
+	public Image lShapeIndicator;
+
+	public GameObject singleEffect, explosionEffect, lineEffect, pierceEffect, lShapeEffect;
+	public GameObject fireSingleEffect, fireExplosionEffect, fireLineEffect;
+
+	[Header("Sound Effects")]
+	public AudioSource audioSource;
+	public AudioClip singleSound, explosionSound, lineSound, pierceSound, lShapeSound;
+	public AudioClip fireSound;
 
 	public enum PowerType { Single, Explosion, Line, Pierce, LShape }
-	public PowerType currentPower = PowerType.Single;	
+	public enum FirePowerType { FireSingle, FireExplosion, FireLine }
 
-	public Button buttonSingle;
-	public Button buttonExplosion;
-	public Button buttonLine;
-	public Button buttonPierce;
-	public Button buttonLShape;
-
-	public TMP_Text ammoSingleText;
-	public TMP_Text ammoExplosionText;
-	public TMP_Text ammoLineText;
-	public TMP_Text ammoPierceText;
-	public TMP_Text ammoLShapeText;
-
-	public GameObject gameOverPanel;
-	public GameObject successPanel;
-	public RectTransform highlightImage;
-
-
-	[SerializeField] private int ammoSingle = 3;
-	[SerializeField] private int ammoExplosion = 1;
-	[SerializeField] private int ammoLine = 2;
-	[SerializeField] private int ammoPierce = 2;
-	[SerializeField] private int ammoLShape = 2;
-
-	// AUDIO
-	[Header("Sound Effects")]
-	[SerializeField] private AudioSource audioSource;
-	[SerializeField] private AudioClip singleSound;
-	[SerializeField] private AudioClip explosionSound;
-	[SerializeField] private AudioClip lineSound;
-	[SerializeField] private AudioClip pierceSound;
-	[SerializeField] private AudioClip lShapeSound;
-
-	// VFX
-	[Header("Visual Effects")]
-	public GameObject singleEffect;
-	public GameObject explosionEffect;
-	public GameObject lineEffect;
-	public GameObject pierceEffect;
-	public GameObject lShapeEffect;
-
+	private PowerType? currentPower = PowerType.Single;
+	private FirePowerType? currentFirePower = null;
+	[SerializeField]
+	private int ammoSingle = 3, ammoExplosion = 1, ammoLine = 2, ammoPierce = 2, ammoLShape = 2;
+	private int ammoFireSingle = 2, ammoFireExplosion = 1, ammoFireLine = 1;
 
 	private Dictionary<Vector3Int, int> resistantTilesHealth = new Dictionary<Vector3Int, int>();
-
+	private Vector3 startTouchWorldPos;
+	private Vector3Int touchStartTilePos;
+	private bool isDragging = false;
+	private int lShapeIndex = 0;
 	private readonly float[] lShapeRotations = { 0f, 90f, 180f, 270f };
 
-
 	void Start()
-	{		
-		buttonSingle.onClick.AddListener(SetSinglePower);
-		buttonExplosion.onClick.AddListener(SetExplosionPower);
-		buttonLine.onClick.AddListener(SetLinePower);
-		buttonPierce.onClick.AddListener(SetPiercePower);
-		buttonLShape.onClick.AddListener(SetLShapePower);
+	{
+		// BotÃµes de muniÃ§Ã£o normal
+		buttonSingle.onClick.AddListener(() => SelectPower(PowerType.Single));
+		buttonExplosion.onClick.AddListener(() => SelectPower(PowerType.Explosion));
+		buttonLine.onClick.AddListener(() => SelectPower(PowerType.Line));
+		buttonPierce.onClick.AddListener(() => SelectPower(PowerType.Pierce));
+		buttonLShape.onClick.AddListener(() => SelectPower(PowerType.LShape));
 
-		//buttonLShape.onClick.AddListener(RotateLShape);
+		// BotÃµes de muniÃ§Ã£o de chama
+		buttonFireSingle.onClick.AddListener(() => SelectFirePower(FirePowerType.FireSingle));
+		buttonFireExplosion.onClick.AddListener(() => SelectFirePower(FirePowerType.FireExplosion));
+		buttonFireLine.onClick.AddListener(() => SelectFirePower(FirePowerType.FireLine));
+
 		RandomizeLShapeDirection();
-
-
-		gameOverPanel.SetActive(false);
-		successPanel.SetActive(false);
 		UpdateAmmoUI();
 		InitializeResistantTiles();
-
-		
 	}
 
 	void Update()
@@ -94,255 +75,240 @@ public class TileDestroyer : MonoBehaviour
 		HandleInput();
 	}
 
+	void SelectPower(PowerType power)
+	{
+		if (GetAmmo(power) > 0)
+		{
+			currentPower = power;
+			currentFirePower = null;
+			MoveHighlightToButton(GetButtonForPower(power));
+		}
+	}
+
+	void SelectFirePower(FirePowerType firePower)
+	{
+		if (GetAmmo(firePower) > 0)
+		{
+			currentFirePower = firePower;
+			currentPower = null;
+			MoveHighlightToButton(GetButtonForFirePower(firePower));
+		}
+	}
+
 	void HandleInput()
 	{
-#if UNITY_EDITOR || UNITY_STANDALONE
 		if (Input.GetMouseButtonDown(0))
 		{
-			if (EventSystem.current.IsPointerOverGameObject())
-				return; // Está clicando na UI, então ignora.
+			if (EventSystem.current.IsPointerOverGameObject()) return;
 
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
 
-			if (currentPower == PowerType.Line)
+			if (currentPower == PowerType.Line || currentFirePower == FirePowerType.FireLine)
 			{
-				touchStartWorldPos = worldPos;
+				startTouchWorldPos = worldPos;
 				touchStartTilePos = tilePos;
 				isDragging = true;
 			}
 			else
-			{				
+			{
 				TryDestroyTiles(tilePos);
 			}
 		}
-
-		if (Input.GetMouseButtonUp(0) && isDragging && currentPower == PowerType.Line)
+		if (Input.GetMouseButtonUp(0) && isDragging)
 		{
 			Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			Vector2 dragDirection = endWorldPos - touchStartWorldPos;
+			Vector2 dragDir = endWorldPos - startTouchWorldPos;
 
-			TryDestroyLineWithDirection(touchStartTilePos, dragDirection);
+			TryDestroyLine(touchStartTilePos, dragDir);
 			isDragging = false;
 		}
-#endif
-
-#if UNITY_ANDROID || UNITY_IOS
-		if (Input.touchCount > 0)
-		{
-			Touch touch = Input.GetTouch(0);
-			Vector3 worldPos = Camera.main.ScreenToWorldPoint(touch.position);
-			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
-
-			if (touch.phase == TouchPhase.Began)
-			{
-				if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
-					return;
-
-				if (currentPower == PowerType.Line)
-				{
-					touchStartWorldPos = worldPos;
-					touchStartTilePos = tilePos;
-					isDragging = true;
-				}
-				else
-				{
-					TryDestroyTiles(tilePos);
-				}
-			}
-			else if (touch.phase == TouchPhase.Ended && isDragging && currentPower == PowerType.Line)
-			{
-				Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(touch.position);
-				Vector2 dragDirection = endWorldPos - touchStartWorldPos;
-
-				TryDestroyLineWithDirection(touchStartTilePos, dragDirection);
-				isDragging = false;
-			}
-		}
-#endif
 	}
 
-
-	//METHODS
-
-	void TryDestroyTiles(Vector3Int centerPosition)
+	void TryDestroyTiles(Vector3Int center)
 	{
-		if (!tilemap.HasTile(centerPosition))
-			return;
+		if (currentPower != null)
+		{
+			PowerType power = currentPower.Value;
+			if (GetAmmo(power) <= 0) return;
 
-		if (currentPower == PowerType.Single && ammoSingle > 0)
+			var positions = GetAffectedTiles(power, center);
+			StartCoroutine(DestroyTilesWithDelay(positions, false));
+			UseAmmo(power);
+		}
+		else if (currentFirePower != null)
 		{
-			StartCoroutine(DestroyTilesWithDelay(centerPosition, new Vector3Int[] { Vector3Int.zero }));
+			FirePowerType firePower = currentFirePower.Value;
+			if (GetAmmo(firePower) <= 0) return;
 
-			ammoSingle--;
-			audioSource.PlayOneShot(singleSound);
+			var positions = GetAffectedTiles(firePower, center);
+			StartCoroutine(DestroyTilesWithDelay(positions, true));
+			UseAmmo(firePower);
 		}
-		else if (currentPower == PowerType.Explosion && ammoExplosion > 0)
+		UpdateAmmoUI();
+	}
+
+	void TryDestroyLine(Vector3Int start, Vector2 dir)
+	{
+		Vector3Int mainDir = Mathf.Abs(dir.x) > Mathf.Abs(dir.y)
+			? (dir.x > 0 ? Vector3Int.right : Vector3Int.left)
+			: (dir.y > 0 ? Vector3Int.up : Vector3Int.down);
+
+		Vector3Int[] linePattern = new[] { Vector3Int.zero, mainDir, mainDir * 2 };
+
+		if (currentPower == PowerType.Line && ammoLine > 0)
 		{
-			StartCoroutine(DestroyTilesWithDelay(centerPosition, new Vector3Int[] {	Vector3Int.zero, Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down }));
-			ammoExplosion--;
-			audioSource.PlayOneShot(explosionSound);
-		}
-		else if (currentPower == PowerType.Line && ammoLine > 0)
-		{
-			StartCoroutine(DestroyTilesWithDelay(centerPosition, new Vector3Int[] {	Vector3Int.zero, Vector3Int.right, Vector3Int.left }));
+			StartCoroutine(DestroyTilesWithDelay(GetTilePositions(start, linePattern), false));
 			ammoLine--;
+			audioSource.PlayOneShot(lineSound);
 		}
-		else if (currentPower == PowerType.Pierce && ammoPierce > 0)
+		else if (currentFirePower == FirePowerType.FireLine && ammoFireLine > 0)
 		{
-			StartCoroutine(DestroyTilesWithDelay(centerPosition, new Vector3Int[] { Vector3Int.zero, Vector3Int.zero, Vector3Int.zero }));
-			ammoPierce--;
-			audioSource.PlayOneShot(pierceSound);
+			StartCoroutine(DestroyTilesWithDelay(GetTilePositions(start, linePattern), true));
+			ammoFireLine--;
+			audioSource.PlayOneShot(fireSound);
 		}
-		else if (currentPower == PowerType.LShape && ammoLShape > 0)
-		{
-			// Define os padrões de "L"
-
-			Vector3Int[][] lPatterns = new Vector3Int[][]
-			{
-				new Vector3Int[] { Vector3Int.zero, Vector3Int.up, Vector3Int.right },   // 0° (Cima, Direita)
-				new Vector3Int[] { Vector3Int.zero, Vector3Int.up, Vector3Int.left },    // 90° (Cima, Esquerda)
-				new Vector3Int[] { Vector3Int.zero, Vector3Int.down, Vector3Int.left },  // 180° (Baixo, Esquerda)
-				new Vector3Int[] { Vector3Int.zero, Vector3Int.down, Vector3Int.right }  // 270° (Baixo, Direita)
-			};
-
-			Vector3Int[] selectedPattern = lPatterns[lShapeIndex]; // Usa a rotação correta
-
-			StartCoroutine(DestroyTilesWithDelay(centerPosition, selectedPattern));
-			ammoLShape--;
-			audioSource.PlayOneShot(lShapeSound);
-			RandomizeLShapeDirection();
-		}
-
-		UpdateAmmoUI();
-	}
-	void TryDestroyLineWithDirection(Vector3Int startPosition, Vector2 dragDirection)
-	{
-		if (currentPower != PowerType.Line || ammoLine <= 0)
-			return;
-
-		if (!tilemap.HasTile(startPosition) && !resistantTilesHealth.ContainsKey(startPosition))
-			return;
-
-		Vector3Int dir;
-
-		// Decide a direção principal do arrasto
-		if (Mathf.Abs(dragDirection.x) > Mathf.Abs(dragDirection.y))
-		{
-			// Horizontal
-			dir = (dragDirection.x > 0) ? Vector3Int.right : Vector3Int.left;
-		}
-		else
-		{
-			// Vertical
-			dir = (dragDirection.y > 0) ? Vector3Int.up : Vector3Int.down;
-		}
-
-		// Destroi os 3 tiles a partir da ponta
-		Vector3Int[] directions = new Vector3Int[]
-		{
-		Vector3Int.zero,           // Ponta (onde clicou)
-        dir,                       // Próximo tile
-        dir * 2                    // Segundo tile
-		};
-
-		StartCoroutine(DestroyTilesWithDelay(startPosition, directions));
-		ammoLine--;
-		audioSource.PlayOneShot(lineSound);
-
 		UpdateAmmoUI();
 	}
 
-
-
-	IEnumerator DestroyTilesWithDelay(Vector3Int centerPosition, Vector3Int[] directions, float delay = 0.3f)
+	Vector3Int[] GetTilePositions(Vector3Int origin, Vector3Int[] pattern)
 	{
-		foreach (Vector3Int direction in directions)
+		Vector3Int[] result = new Vector3Int[pattern.Length];
+		for (int i = 0; i < pattern.Length; i++)
+			result[i] = origin + pattern[i];
+		return result;
+	}
+
+	IEnumerator DestroyTilesWithDelay(Vector3Int[] positions, bool isFire)
+	{
+		foreach (var pos in positions)
 		{
-			Vector3Int targetPosition = centerPosition + direction;
-			PlayEffect(GetEffectForCurrentPower(), targetPosition);
+			PlayEffect(GetEffect(isFire), pos);
 		}
 
-		yield return new WaitForSeconds(delay);
+		yield return new WaitForSeconds(0.3f);
 
-		foreach (Vector3Int direction in directions)
+		foreach (var pos in positions)
 		{
-			Vector3Int targetPosition = centerPosition + direction;
-
-			if (resistantTilesHealth.ContainsKey(targetPosition))
+			if (isFire)
 			{
-				resistantTilesHealth[targetPosition]--;
-				if (resistantTilesHealth[targetPosition] <= 0)
+				if (vineTilemap.HasTile(pos))
+					vineTilemap.SetTile(pos, null);
+			}
+			else
+			{
+				if (resistantTilesHealth.ContainsKey(pos))
 				{
-					resistantTilemap.SetTile(targetPosition, null);
-					resistantTilesHealth.Remove(targetPosition);
+					resistantTilesHealth[pos]--;
+					if (resistantTilesHealth[pos] <= 0)
+					{
+						resistantTilemap.SetTile(pos, null);
+						resistantTilesHealth.Remove(pos);
+					}
+				}
+				else if (tilemap.HasTile(pos))
+				{
+					tilemap.SetTile(pos, null);
 				}
 			}
-			else if (tilemap.HasTile(targetPosition))
-			{
-				tilemap.SetTile(targetPosition, null);
-			}
 		}
 
-		UpdateAmmoUI();
 		CheckGameOverOrSuccess();
 	}
 
+	GameObject GetEffect(bool isFire)
+	{
+		if (isFire && currentFirePower != null)
+		{
+			switch (currentFirePower)
+			{
+				case FirePowerType.FireSingle: return fireSingleEffect;
+				case FirePowerType.FireExplosion: return fireExplosionEffect;
+				case FirePowerType.FireLine: return fireLineEffect;
+			}
+		}
+		else if (!isFire && currentPower != null)
+		{
+			switch (currentPower)
+			{
+				case PowerType.Single: return singleEffect;
+				case PowerType.Explosion: return explosionEffect;
+				case PowerType.Line: return lineEffect;
+				case PowerType.Pierce: return pierceEffect;
+				case PowerType.LShape: return lShapeEffect;
+			}
+		}
+		return null;
+	}
+	[System.Serializable]
+	public class FireAmmo
+	{
+		public FireAmmoEffect effect;
+		public int count;
+	}
+	public List<FireAmmo> fireAmmoInventory;
+	Vector3Int[] GetAffectedTiles(PowerType power, Vector3Int center)
+	{
+		switch (power)
+		{
+			case PowerType.Single: return new[] { center };
+			case PowerType.Explosion: return new[] { center, center + Vector3Int.up, center + Vector3Int.down, center + Vector3Int.left, center + Vector3Int.right };
+			case PowerType.Pierce: return new[] { center, center + Vector3Int.zero, Vector3Int.zero, Vector3Int.zero };
+			case PowerType.LShape:
+				Vector3Int[][] patterns = {
+					new[] { Vector3Int.zero, Vector3Int.up, Vector3Int.right },
+					new[] { Vector3Int.zero, Vector3Int.up, Vector3Int.left },
+					new[] { Vector3Int.zero, Vector3Int.down, Vector3Int.left },
+					new[] { Vector3Int.zero, Vector3Int.down, Vector3Int.right }
+				};
+				return GetTilePositions(center, patterns[lShapeIndex]);
+			default: return new[] { center };
+		}
+	}
+
+	Vector3Int[] GetAffectedTiles(FirePowerType firePower, Vector3Int center)
+	{
+		switch (firePower)
+		{
+			case FirePowerType.FireSingle: return new[] { center };
+			case FirePowerType.FireExplosion:
+				List<Vector3Int> explosion = new();
+				for (int x = -1; x <= 1; x++)
+					for (int y = -1; y <= 1; y++)
+						if (!(x == 0 && y == 0))
+							explosion.Add(center + new Vector3Int(x, y, 0));
+				return explosion.ToArray();
+			case FirePowerType.FireLine: return new[] { center, center + Vector3Int.up, center + Vector3Int.down };
+			default: return new[] { center };
+		}
+	}
+
+	void PlayEffect(GameObject effectPrefab, Vector3Int pos)
+	{
+		if (effectPrefab == null) return;
+		Vector3 world = tilemap.CellToWorld(pos) + tilemap.cellSize / 2;
+		Instantiate(effectPrefab, world, Quaternion.identity);
+	}
 
 	void InitializeResistantTiles()
 	{
 		BoundsInt bounds = resistantTilemap.cellBounds;
-		foreach (Vector3Int pos in bounds.allPositionsWithin)
+		foreach (var pos in bounds.allPositionsWithin)
 		{
 			if (resistantTilemap.HasTile(pos))
-			{
 				resistantTilesHealth[pos] = resistantTilesInicialHealth;
-			}
 		}
 	}
 
-	public void SetSinglePower()
+	void MoveHighlightToButton(Button btn)
 	{
-		if (ammoSingle > 0)
-		{
-			currentPower = PowerType.Single;
-			MoveHighlightToButton(buttonSingle);
-		}
+		highlightImage.position = btn.transform.position;
 	}
 
-	public void SetExplosionPower()
+	void RandomizeLShapeDirection()
 	{
-		if (ammoExplosion > 0)
-		{
-			currentPower = PowerType.Explosion;
-			MoveHighlightToButton(buttonExplosion);
-		}
-	}
-	public void SetLinePower()
-	{
-		if (ammoLine > 0)
-		{
-			currentPower = PowerType.Line;
-			MoveHighlightToButton(buttonLine);
-		}
-	}
-
-	public void SetPiercePower()
-	{
-		if (ammoPierce > 0)
-		{
-			currentPower = PowerType.Pierce;
-			MoveHighlightToButton(buttonPierce);
-		}
-	}
-
-	public void SetLShapePower()
-	{
-		if (ammoLShape > 0)
-		{
-			currentPower = PowerType.LShape;
-			MoveHighlightToButton(buttonLShape);
-		}
+		lShapeIndex = Random.Range(0, 4);
+		lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
 	}
 
 	void UpdateAmmoUI()
@@ -351,134 +317,105 @@ public class TileDestroyer : MonoBehaviour
 		ammoExplosionText.text = $"Explosion: {ammoExplosion}";
 		ammoLineText.text = $"Line: {ammoLine}";
 		ammoPierceText.text = $"Pierce: {ammoPierce}";
-		ammoLShapeText.text = $"L-Shape: {ammoLShape}";
+		ammoLShapeText.text = $"L: {ammoLShape}";
+
+		ammoFireSingleText.text = $"ðŸ”¥Single: {ammoFireSingle}";
+		ammoFireExplosionText.text = $"ðŸ”¥Explosion: {ammoFireExplosion}";
+		ammoFireLineText.text = $"ðŸ”¥Line: {ammoFireLine}";
 
 		buttonSingle.interactable = ammoSingle > 0;
 		buttonExplosion.interactable = ammoExplosion > 0;
 		buttonLine.interactable = ammoLine > 0;
 		buttonPierce.interactable = ammoPierce > 0;
 		buttonLShape.interactable = ammoLShape > 0;
-	}
-	private void MoveHighlightToButton(Button selectedButton)
-	{
-		highlightImage.position = selectedButton.transform.position;
+
+		buttonFireSingle.interactable = ammoFireSingle > 0;
+		buttonFireExplosion.interactable = ammoFireExplosion > 0;
+		buttonFireLine.interactable = ammoFireLine > 0;
 	}
 
-	private void RandomizeLShapeDirection()
+	int GetAmmo(PowerType power) => power switch
 	{
-		lShapeIndex = Random.Range(0, 4); // Sorteia um número entre 0 e 3
-		lShapeIndicator.rectTransform.rotation = Quaternion.Euler(0, 0, lShapeRotations[lShapeIndex]);
-	}
+		PowerType.Single => ammoSingle,
+		PowerType.Explosion => ammoExplosion,
+		PowerType.Line => ammoLine,
+		PowerType.Pierce => ammoPierce,
+		PowerType.LShape => ammoLShape,
+		_ => 0
+	};
 
-	// VFX
-	void PlayEffect(GameObject effectPrefab, Vector3Int position)
+	int GetAmmo(FirePowerType power) => power switch
 	{
-		if (effectPrefab == null) return;
+		FirePowerType.FireSingle => ammoFireSingle,
+		FirePowerType.FireExplosion => ammoFireExplosion,
+		FirePowerType.FireLine => ammoFireLine,
+		_ => 0
+	};
 
-		Vector3 worldPos = tilemap.CellToWorld(position) + tilemap.cellSize / 2;
-		Instantiate(effectPrefab, worldPos, Quaternion.identity);
-		GameObject effect = effectPrefab;
-		//Destroy(effectPrefab, 1f);
-	}
-	GameObject GetEffectForCurrentPower()
+	void UseAmmo(PowerType power)
 	{
-		switch (currentPower)
+		switch (power)
 		{
-			case PowerType.Single: return singleEffect;
-			case PowerType.Explosion: return explosionEffect;
-			case PowerType.Line: return lineEffect;
-			case PowerType.Pierce: return pierceEffect;
-			case PowerType.LShape: return lShapeEffect;
-			default: return null;
-		}
-	}
-	
-	IEnumerator PlayEffectCascade(GameObject effectPrefab, Vector3Int[] tilePositions, float delay = 0.2f)
-	{
-		foreach (var tilePos in tilePositions)
-		{
-			Vector3 worldPos = tilemap.CellToWorld(tilePos) + tilemap.cellSize / 2f;
-			var instance = Instantiate(effectPrefab, worldPos, Quaternion.identity);
-			//Destroy(instance, 2f); // Destrói o efeito após 2 segundos
-			yield return new WaitForSeconds(delay);
-		}
-	}
-	IEnumerator PlayLShapeEffectCascade(GameObject effectPrefab, Vector3Int[] tilePositions, float delay = 0.1f)
-	{
-		if (tilePositions.Length < 3)
-		{
-			// Fallback se por algum motivo tiver menos que 3 tiles
-			yield return PlayEffectCascade(effectPrefab, tilePositions, delay);
-			yield break;
-		}
-
-		// Primeiro tile
-		Vector3 worldPos = tilemap.CellToWorld(tilePositions[0]) + tilemap.cellSize / 2f;
-		var firstEffect = Instantiate(effectPrefab, worldPos, Quaternion.identity);
-		//Destroy(firstEffect, 2f);
-
-		yield return new WaitForSeconds(delay);
-
-		// Segundo e terceiro ao mesmo tempo
-		for (int i = 1; i < tilePositions.Length; i++)
-		{
-			Vector3 pos = tilemap.CellToWorld(tilePositions[i]) + tilemap.cellSize / 2f;
-			var fx = Instantiate(effectPrefab, pos, Quaternion.identity);
-			//Destroy(fx, 2f);
+			case PowerType.Single: ammoSingle--; audioSource.PlayOneShot(singleSound); break;
+			case PowerType.Explosion: ammoExplosion--; audioSource.PlayOneShot(explosionSound); break;
+			case PowerType.Line: ammoLine--; audioSource.PlayOneShot(lineSound); break;
+			case PowerType.Pierce: ammoPierce--; audioSource.PlayOneShot(pierceSound); break;
+			case PowerType.LShape: ammoLShape--; audioSource.PlayOneShot(lShapeSound); RandomizeLShapeDirection(); break;
 		}
 	}
 
-	//  END OF VFX
+	void UseAmmo(FirePowerType power)
+	{
+		switch (power)
+		{
+			case FirePowerType.FireSingle: ammoFireSingle--; break;
+			case FirePowerType.FireExplosion: ammoFireExplosion--; break;
+			case FirePowerType.FireLine: ammoFireLine--; break;
+		}
+		audioSource.PlayOneShot(fireSound);
+	}
 
 	bool AnyTileLeft()
 	{
-		if (resistantTilesHealth.Count > 0)
-			return true;
-
-		BoundsInt bounds = tilemap.cellBounds;
-		foreach (Vector3Int pos in bounds.allPositionsWithin)
-		{
-			if (tilemap.HasTile(pos))
-			{
-				return true; // Ainda há tiles no mapa
-			}
-		}
-		return false; // Todos os tiles foram destruídos
+		foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+			if (tilemap.HasTile(pos) || vineTilemap.HasTile(pos) || resistantTilemap.HasTile(pos)) return true;
+		return false;
 	}
 
-	bool AllTilesDestroyed()
-	{
-		return !AnyTileLeft();
-	}
 	void CheckGameOverOrSuccess()
 	{
-		if (AllTilesDestroyed())
+		if (!AnyTileLeft())
 		{
-			Success();
+			successPanel.SetActive(true);
 		}
-		else if (ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 && ammoPierce == 0 && ammoLShape == 0 && AnyTileLeft())
+		else if (
+			ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 &&
+			ammoPierce == 0 && ammoLShape == 0 &&
+			ammoFireSingle == 0 && ammoFireExplosion == 0 && ammoFireLine == 0
+		)
 		{
-			GameOver();
+			gameOverPanel.SetActive(true);
 		}
 	}
 
-	void GameOver()
-	{
-		gameOverPanel.SetActive(true);
-	}
+	public void RestartGame() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+	public void NextLevel() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 
-	void Success()
+	Button GetButtonForPower(PowerType power) => power switch
 	{
-		successPanel.SetActive(true);
-	}
+		PowerType.Single => buttonSingle,
+		PowerType.Explosion => buttonExplosion,
+		PowerType.Line => buttonLine,
+		PowerType.Pierce => buttonPierce,
+		PowerType.LShape => buttonLShape,
+		_ => null
+	};
 
-	public void RestartGame()
+	Button GetButtonForFirePower(FirePowerType power) => power switch
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-	}
-
-	public void NextLevel()
-	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-	}
+		FirePowerType.FireSingle => buttonFireSingle,
+		FirePowerType.FireExplosion => buttonFireExplosion,
+		FirePowerType.FireLine => buttonFireLine,
+		_ => null
+	};
 }

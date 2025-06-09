@@ -12,9 +12,9 @@ public class PlayerScript : MonoBehaviour
 			Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			Vector3Int tilePosition = tilemap.WorldToCell(mouseWorldPos);
 
-			//if (tilemap.HasTile(tilePosition)) // Verifica se há um tile na posição
+			//if (mainTilemap.HasTile(tilePosition)) // Verifica se há um tile na posição
 			//{
-			//	tilemap.SetTile(tilePosition, null); // Remove o tile
+			//	mainTilemap.SetTile(tilePosition, null); // Remove o tile
 			//}
 			CrossDestroy(tilePosition);
 		}

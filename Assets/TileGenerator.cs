@@ -9,7 +9,7 @@ public class TileGenerator : MonoBehaviour
 
 	public void GenerateTiles(int totalTiles)
 	{
-		// Limpa o tilemap antes de gerar
+		// Limpa o mainTilemap antes de gerar
 		tilemap.ClearAllTiles();
 
 		int tilesPlaced = 0;
