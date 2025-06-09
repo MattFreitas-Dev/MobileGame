@@ -99,31 +99,46 @@ public class TileDestroyer : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
+			// Bloqueia clique em UI
 			if (EventSystem.current.IsPointerOverGameObject()) return;
 
+			// Converte para posição no mundo
 			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			worldPos.z = 0f;
+
+			// Converte para posição da célula do tilemap
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
 
-			if (currentPower == PowerType.Line || currentFirePower == FirePowerType.FireLine)
+			// Verifica se há tile nessa posição
+			if (tilemap.HasTile(tilePos))
 			{
-				startTouchWorldPos = worldPos;
-				touchStartTilePos = tilePos;
-				isDragging = true;
-			}
-			else
-			{
-				TryDestroyTiles(tilePos);
+				if (currentPower == PowerType.Line || currentFirePower == FirePowerType.FireLine)
+				{
+					startTouchWorldPos = worldPos;
+					touchStartTilePos = tilePos;
+					isDragging = true;
+				}
+				else
+				{
+					TryDestroyTiles(tilePos);
+				}
 			}
 		}
+
 		if (Input.GetMouseButtonUp(0) && isDragging)
 		{
 			Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			endWorldPos.z = 0f;
+
 			Vector2 dragDir = endWorldPos - startTouchWorldPos;
 
 			TryDestroyLine(touchStartTilePos, dragDir);
 			isDragging = false;
 		}
 	}
+
+
+
 
 	void TryDestroyTiles(Vector3Int center)
 	{
@@ -183,6 +198,7 @@ public class TileDestroyer : MonoBehaviour
 	{
 		foreach (var pos in positions)
 		{
+
 			PlayEffect(GetEffect(isFire), pos);
 		}
 
@@ -199,16 +215,23 @@ public class TileDestroyer : MonoBehaviour
 			{
 				if (resistantTilesHealth.ContainsKey(pos))
 				{
-					resistantTilesHealth[pos]--;
-					if (resistantTilesHealth[pos] <= 0)
+					// Impede destruição se houver vine
+					if (!vineTilemap.HasTile(pos))
 					{
-						resistantTilemap.SetTile(pos, null);
-						resistantTilesHealth.Remove(pos);
+						resistantTilesHealth[pos]--;
+						if (resistantTilesHealth[pos] <= 0)
+						{
+							resistantTilemap.SetTile(pos, null);
+							resistantTilesHealth.Remove(pos);
+						}
 					}
 				}
 				else if (tilemap.HasTile(pos))
 				{
-					tilemap.SetTile(pos, null);
+					if (!vineTilemap.HasTile(pos))
+					{
+						tilemap.SetTile(pos, null);
+					}
 				}
 			}
 		}
@@ -253,7 +276,7 @@ public class TileDestroyer : MonoBehaviour
 		{
 			case PowerType.Single: return new[] { center };
 			case PowerType.Explosion: return new[] { center, center + Vector3Int.up, center + Vector3Int.down, center + Vector3Int.left, center + Vector3Int.right };
-			case PowerType.Pierce: return new[] { center, center + Vector3Int.zero, Vector3Int.zero, Vector3Int.zero };
+			case PowerType.Pierce: return new[] { center, center };
 			case PowerType.LShape:
 				Vector3Int[][] patterns = {
 					new[] { Vector3Int.zero, Vector3Int.up, Vector3Int.right },
@@ -302,8 +325,16 @@ public class TileDestroyer : MonoBehaviour
 
 	void MoveHighlightToButton(Button btn)
 	{
-		highlightImage.position = btn.transform.position;
+		RectTransform btnRect = btn.GetComponent<RectTransform>();
+		RectTransform highlightRect = highlightImage;
+
+		// Copia a posição
+		highlightRect.position = btnRect.position;
+
+		// Ajusta o tamanho adicionando +10 pixels de margem em largura e altura (5px cada lado)
+		highlightRect.sizeDelta = btnRect.sizeDelta + new Vector2(20f, 10f);
 	}
+
 
 	void RandomizeLShapeDirection()
 	{
@@ -319,9 +350,9 @@ public class TileDestroyer : MonoBehaviour
 		ammoPierceText.text = $"Pierce: {ammoPierce}";
 		ammoLShapeText.text = $"L: {ammoLShape}";
 
-		ammoFireSingleText.text = $"🔥Single: {ammoFireSingle}";
-		ammoFireExplosionText.text = $"🔥Explosion: {ammoFireExplosion}";
-		ammoFireLineText.text = $"🔥Line: {ammoFireLine}";
+		ammoFireSingleText.text = $"Fire: {ammoFireSingle}";
+		ammoFireExplosionText.text = $"Fire Explosion: {ammoFireExplosion}";
+		ammoFireLineText.text = $"Flamethrower: {ammoFireLine}";
 
 		buttonSingle.interactable = ammoSingle > 0;
 		buttonExplosion.interactable = ammoExplosion > 0;
