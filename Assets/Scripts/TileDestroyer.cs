@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.EventSystems;
+using static TileDestroyer;
 
 public class TileDestroyer : MonoBehaviour
 {
@@ -41,8 +42,7 @@ public class TileDestroyer : MonoBehaviour
 	private PowerType? currentPower = PowerType.Single;
 	private FirePowerType? currentFirePower = null;
 	[SerializeField]
-	private int ammoSingle = 3, ammoExplosion = 1, ammoLine = 2, ammoPierce = 2, ammoLShape = 2;
-	private int ammoFireSingle = 2, ammoFireExplosion = 1, ammoFireLine = 1;
+	private int ammoSingle = 3, ammoExplosion = 1, ammoLine = 2, ammoPierce = 2, ammoLShape = 2, ammoFireSingle = 2, ammoFireExplosion = 1, ammoFireLine = 1;
 
 	private Dictionary<Vector3Int, int> resistantTilesHealth = new Dictionary<Vector3Int, int>();
 	private Vector3 startTouchWorldPos;
@@ -409,20 +409,60 @@ public class TileDestroyer : MonoBehaviour
 	bool AnyTileLeft()
 	{
 		foreach (var pos in tilemap.cellBounds.allPositionsWithin)
-			if (tilemap.HasTile(pos) || vineTilemap.HasTile(pos) || resistantTilemap.HasTile(pos)) return true;
+		{
+			if (tilemap.HasTile(pos) || resistantTilemap.HasTile(pos) || vineTilemap.HasTile(pos))
+				return true;
+
+		}
+		return false;
+	}
+	bool AnyVineTileLeft()
+	{
+		foreach (var pos in vineTilemap.cellBounds.allPositionsWithin)
+		{
+			if (vineTilemap.HasTile(pos))
+				return true;
+		}
 		return false;
 	}
 
+
+	//void CheckFireAmmoGameOver()
+	//{
+	//	bool hasVineTiles = false;
+
+	//	foreach (var pos in vineTilemap.cellBounds.allPositionsWithin)
+	//	{
+	//		if (vineTilemap.HasTile(pos))
+	//		{
+	//			hasVineTiles = true;
+	//			break;
+	//		}
+	//	}
+
+	//	if (hasVineTiles && ammoFireSingle == 0 && ammoFireExplosion == 0 && ammoFireLine == 0)
+	//	{
+	//		Debug.Log("Game Over: Sem munição de fogo e ainda há tiles VINE.");
+	//		gameOverPanel.SetActive(true);
+	//	}
+	//}
+
+
+
 	void CheckGameOverOrSuccess()
 	{
+		//CheckFireAmmoGameOver();
 		if (!AnyTileLeft())
 		{
 			successPanel.SetActive(true);
 		}
-		else if (
+		else if (ammoFireSingle == 0 && ammoFireExplosion == 0 && ammoFireLine == 0 && AnyVineTileLeft())
+		{
+			gameOverPanel.SetActive(true);
+		}
+		else if (			
 			ammoSingle == 0 && ammoExplosion == 0 && ammoLine == 0 &&
-			ammoPierce == 0 && ammoLShape == 0 &&
-			ammoFireSingle == 0 && ammoFireExplosion == 0 && ammoFireLine == 0
+			ammoPierce == 0 && ammoLShape == 0
 		)
 		{
 			gameOverPanel.SetActive(true);
