@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Minimalism, city art_0: -4471591441225462163
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
