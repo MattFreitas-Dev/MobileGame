@@ -1269,6 +1269,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 748926493602688215, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
+      propertyPath: animationClip
+      value: 
+      objectReference: {fileID: 7400000, guid: d2f32444b3c29eb408c8c55924b925cc, type: 2}
     - target: {fileID: 1139598268132113138, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
       propertyPath: m_LocalScale.x
       value: 6.6176443
@@ -1429,10 +1433,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9097593032544430590, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1952166253}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8609746237872423376, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1582337717}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
 --- !u!114 &1048102238 stripped
 MonoBehaviour:
@@ -2046,30 +2047,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1 &1582337715 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8609746237872423376, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
-  m_PrefabInstance: {fileID: 1007877121}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &1582337716 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 6883381300658232883, guid: b0df1aa9157f5c64da717222f7303b0f, type: 3}
-  m_PrefabInstance: {fileID: 1007877121}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1582337717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582337715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95b6a1891b6d1ef43be5db56e990645b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 1582337716}
-  animation: {fileID: 7400000, guid: d2f32444b3c29eb408c8c55924b925cc, type: 2}
 --- !u!114 &1584792052 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4401379179097395720, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}

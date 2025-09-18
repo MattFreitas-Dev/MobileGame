@@ -36,12 +36,23 @@ public class UI_Manager : MonoBehaviour
         SceneManager.LoadScene(1);		
     }
 
+	public void LoadLevel(int index)
+	{
+		SceneManager.LoadScene(index);
+	}
+
     public void QuitToMenu()
     {
         SceneManager.LoadScene("MainMenu");
     }
     public void QuitGame()
     {
+#if UNITY_WEBGL
+		Application.OpenURL("https://mateus-de-freitas.itch.io");
+		SceneManager.LoadScene("MainMenu");
+#else
 		Application.Quit();
+		SceneManager.LoadScene("MainMenu");
+#endif
 	}
 }

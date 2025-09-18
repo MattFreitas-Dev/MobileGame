@@ -1564,7 +1564,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 48cde60d3a3d9412caeaf949b6364160, type: 3}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoLShape
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoPierce
@@ -1572,7 +1572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoSingle
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: buttonLine
@@ -1608,7 +1608,7 @@ PrefabInstance:
       objectReference: {fileID: 508639034}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoExplosion
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: gameOverPanel
@@ -1616,7 +1616,7 @@ PrefabInstance:
       objectReference: {fileID: 156545265}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoFireSingle
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8218576226208697905, guid: 0c0fa7eb55c64fa4584b4ee672af755c, type: 3}
       propertyPath: ammoLShapeText

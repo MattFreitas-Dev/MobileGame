@@ -51,8 +51,23 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Scene 6.unity
     guid: 19c9f38f9bf8236439754aef88fe71d9
   - enabled: 1
+    path: Assets/Scenes/Main Scene 6.1.unity
+    guid: 18c1bb906f2419d4eb2e2fa82a7105c4
+  - enabled: 1
     path: Assets/Scenes/Main Scene 7.unity
     guid: 1c6f8c7183e141c4c862ee95fe9cfa7e
+  - enabled: 1
+    path: Assets/Scenes/Main Scene 8.unity
+    guid: 26cb5273c80f89f409e5a63dac052ac3
+  - enabled: 1
+    path: Assets/Scenes/Main Scene 8.5.unity
+    guid: ca8e7928093859e4f9797253644c8ee1
+  - enabled: 1
+    path: Assets/Scenes/Main Scene 9.unity
+    guid: dde32429ac7fa3e40b2ab0b5d05810f7
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: b03f679566131004dacb473bf1b16d61
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 243ab9f0332e5f04aa03ea3fd6689e26, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
