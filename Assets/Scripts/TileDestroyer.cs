@@ -97,19 +97,21 @@ public class TileDestroyer : MonoBehaviour
 
 	void HandleInput()
 	{
-		if (Input.GetMouseButtonDown(0))
+		// Use touch for mobile, but keep mouse for testing in the editor
+		bool began = Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
+		bool ended = Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended);
+
+		Vector3 screenPos = (Input.touchCount > 0) ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
+
+		if (began)
 		{
-			// Bloqueia clique em UI
-			if (EventSystem.current.IsPointerOverGameObject()) return;
+			// This stops the "click" from going through the UI buttons into the game
+			if (EventSystem.current.IsPointerOverGameObject(Input.touchCount > 0 ? Input.GetTouch(0).fingerId : -1)) return;
 
-			// Converte para posição no mundo
-			Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
 			worldPos.z = 0f;
-
-			// Converte para posição da célula do tilemap
 			Vector3Int tilePos = tilemap.WorldToCell(worldPos);
 
-			// Verifica se há tile nessa posição
 			if (tilemap.HasTile(tilePos))
 			{
 				if (currentPower == PowerType.Line || currentFirePower == FirePowerType.FireLine)
@@ -125,12 +127,11 @@ public class TileDestroyer : MonoBehaviour
 			}
 		}
 
-		if (Input.GetMouseButtonUp(0) && isDragging)
+		if (ended && isDragging)
 		{
-			Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Vector3 endWorldPos = Camera.main.ScreenToWorldPoint(screenPos);
 			endWorldPos.z = 0f;
-
-			Vector2 dragDir = endWorldPos - startTouchWorldPos;
+			Vector2 dragDir = (Vector2)endWorldPos - (Vector2)startTouchWorldPos;
 
 			TryDestroyLine(touchStartTilePos, dragDir);
 			isDragging = false;
