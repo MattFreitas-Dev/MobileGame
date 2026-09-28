@@ -1024,6 +1024,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 113909261}
+    - target: {fileID: 4266795049673245282, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Fire:  1'
+      objectReference: {fileID: 0}
     - target: {fileID: 4401379179097395720, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1032,10 +1036,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 583301945}
+    - target: {fileID: 5805769552758914870, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Single:  1'
+      objectReference: {fileID: 0}
     - target: {fileID: 5942752942544142222, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 113909261}
+    - target: {fileID: 6974005105878127297, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Pierce:  1'
+      objectReference: {fileID: 0}
     - target: {fileID: 7326197989126725345, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

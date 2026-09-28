@@ -187,6 +187,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 583301945}
   m_SourcePrefab: {fileID: 100100000, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+--- !u!114 &60938607 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3572456532421009614, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+  m_PrefabInstance: {fileID: 60938606}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 583301944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0732626278346438ebdc3dd17c5c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &93160338 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 674295839284333277, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
@@ -2306,6 +2317,22 @@ PrefabInstance:
     - target: {fileID: 1464430142324185433, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 583301945}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 60938607}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Button_Sound
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: QuitToMenu
       objectReference: {fileID: 0}
     - target: {fileID: 3034941053940264103, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_Name

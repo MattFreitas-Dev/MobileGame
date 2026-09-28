@@ -1793,9 +1793,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 4313885903801771447, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
         m_TargetAssemblyTypeName: UI_sounds, Assembly-CSharp
-        m_MethodName: Button_Sound
+        m_MethodName: Menu_Sound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1805,7 +1805,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 3572456532421009614, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
         m_TargetAssemblyTypeName: UI_Manager, Assembly-CSharp
         m_MethodName: QuitToMenu
         m_Mode: 1

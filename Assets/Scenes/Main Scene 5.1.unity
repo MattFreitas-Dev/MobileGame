@@ -1935,6 +1935,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2325028296324953555, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'L - Shape: 0'
+      objectReference: {fileID: 0}
     - target: {fileID: 3034941053940264103, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_Name
       value: MainCanvas
@@ -1950,6 +1954,18 @@ PrefabInstance:
     - target: {fileID: 3332176331295533827, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_SortingOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5805769552758914870, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Single:  0'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5886230492509290521, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Explosion: 2'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974005105878127297, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Pierce:  2'
       objectReference: {fileID: 0}
     - target: {fileID: 8160596477527088271, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_Pivot.x
@@ -2030,6 +2046,10 @@ PrefabInstance:
     - target: {fileID: 8160596477527088271, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675731336909609422, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Line: 2'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

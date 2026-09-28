@@ -167,14 +167,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7772491171760962554, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
-      propertyPath: m_Resource
+    - target: {fileID: 4313885903801771447, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+      propertyPath: audioSource
       value: 
-      objectReference: {fileID: 8300000, guid: 559c232a43caebe41870ce54786f604e, type: 3}
-    - target: {fileID: 7772491171760962554, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 559c232a43caebe41870ce54786f604e, type: 3}
+      objectReference: {fileID: 401365717}
     - target: {fileID: 9205799377150898751, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
       propertyPath: m_Name
       value: UI Manager
@@ -182,11 +178,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9205799377150898751, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 583301945}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+--- !u!114 &60938607 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3572456532421009614, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+  m_PrefabInstance: {fileID: 60938606}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0732626278346438ebdc3dd17c5c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &93160338 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 674295839284333277, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
@@ -629,26 +633,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &583301944 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9205799377150898751, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
+--- !u!114 &583301945 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4313885903801771447, guid: b0054d332ba9d004ebd8cd83dac50381, type: 3}
   m_PrefabInstance: {fileID: 60938606}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &583301945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 583301944}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 204f0d93dffbcd04999f1081aa5ed470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 401365717}
-  buttonSFX: {fileID: 8300000, guid: fd3acc58bf3a8be4b8375e6bf7dd2529, type: 3}
-  menuSFX: {fileID: 8300000, guid: 6863b3ad3cdefe247ac3bcccbf2ed4e3, type: 3}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,6 +1867,22 @@ PrefabInstance:
     - target: {fileID: 1464430142324185433, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 583301945}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 60938607}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Button_Sound
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: QuitToMenu
       objectReference: {fileID: 0}
     - target: {fileID: 3034941053940264103, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_Name

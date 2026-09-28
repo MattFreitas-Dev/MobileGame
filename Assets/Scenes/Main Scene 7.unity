@@ -1816,6 +1816,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 583301945}
+    - target: {fileID: 2325028296324953555, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'L - Shape: 2'
+      objectReference: {fileID: 0}
     - target: {fileID: 2399640579428237073, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1844,6 +1848,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 583301945}
+    - target: {fileID: 5864841672726816265, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Fire Explosion: 0'
+      objectReference: {fileID: 0}
     - target: {fileID: 5942752942544142222, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1852,10 +1860,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 113909261}
+    - target: {fileID: 6974005105878127297, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Pierce:  1'
+      objectReference: {fileID: 0}
     - target: {fileID: 7326197989126725345, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 113909261}
+    - target: {fileID: 7832750542704551997, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
+      propertyPath: m_text
+      value: 'Fire Line: 2'
+      objectReference: {fileID: 0}
     - target: {fileID: 8066174572699506575, guid: 4fcf029a93e9a14489935472ef92a439, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

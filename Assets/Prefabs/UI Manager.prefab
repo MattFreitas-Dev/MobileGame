@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2513833284886019151}
   - component: {fileID: 3572456532421009614}
   - component: {fileID: 7772491171760962554}
+  - component: {fileID: 4313885903801771447}
   m_Layer: 0
   m_Name: UI Manager
   m_TagString: Untagged
@@ -146,3 +147,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4313885903801771447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9205799377150898751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 204f0d93dffbcd04999f1081aa5ed470, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  buttonSFX: {fileID: 8300000, guid: fd3acc58bf3a8be4b8375e6bf7dd2529, type: 3}
+  menuSFX: {fileID: 8300000, guid: 6863b3ad3cdefe247ac3bcccbf2ed4e3, type: 3}
